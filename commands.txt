@@ -1,0 +1,112 @@
+CREATE DATABASE DentalHealthDB_v2;
+USE DentalHealthDB_v2;
+
+CREATE TABLE users (
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL,
+    Role ENUM('Admin', 'Doctor', 'Patient') NOT NULL
+);
+
+CREATE TABLE patients (
+    PatientID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT UNIQUE,
+    DateOfBirth DATE,
+    ContactNumber VARCHAR(15),
+    Address TEXT,
+    MedicalHistory TEXT,
+    FOREIGN KEY (UserID) REFERENCES users(UserID) ON DELETE CASCADE
+);
+
+CREATE TABLE doctors (
+    DoctorID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT UNIQUE,
+    Specialization VARCHAR(100),
+    ExperienceYears INT,
+    ContactNumber VARCHAR(15),
+    FOREIGN KEY (UserID) REFERENCES users(UserID) ON DELETE CASCADE
+);
+
+CREATE TABLE appointments (
+    AppointmentID INT PRIMARY KEY AUTO_INCREMENT,
+    PatientID INT,
+    DoctorID INT,
+    AppointmentDate DATETIME,
+    Status ENUM('Pending', 'Completed'),
+    FOREIGN KEY (PatientID) REFERENCES patients(PatientID) ON DELETE CASCADE,
+    FOREIGN KEY (DoctorID) REFERENCES doctors(DoctorID) ON DELETE CASCADE
+);
+
+CREATE TABLE treatments (
+    TreatmentID INT PRIMARY KEY AUTO_INCREMENT,
+    PatientID INT,
+    DoctorID INT,
+    TreatmentDetails TEXT,
+    TreatmentDate DATE,
+    FOREIGN KEY (PatientID) REFERENCES patients(PatientID) ON DELETE CASCADE,
+    FOREIGN KEY (DoctorID) REFERENCES doctors(DoctorID) ON DELETE CASCADE
+);
+
+CREATE TABLE bruxism_monitoring (
+    MonitoringID INT PRIMARY KEY AUTO_INCREMENT,
+    PatientID INT,
+    SensorData TEXT,
+    RiskScore DECIMAL(5,2),
+    MonitoringDate DATETIME,
+    FOREIGN KEY (PatientID) REFERENCES patients(PatientID) ON DELETE CASCADE
+);
+
+CREATE TABLE ai_alerts (
+    AlertID INT PRIMARY KEY AUTO_INCREMENT,
+    PatientID INT,
+    AlertMessage TEXT,
+    SeverityLevel ENUM('Low', 'Medium', 'High'),
+    FOREIGN KEY (PatientID) REFERENCES patients(PatientID) ON DELETE CASCADE
+);
+
+INSERT INTO users (Name, Email, PasswordHash, Role) VALUES
+('Admin One', 'admin@example.com', 'hashedpassword1', 'Admin'),
+('Dr. Smith', 'dr.smith@example.com', 'hashedpassword2', 'Doctor'),
+('John Doe', 'john.doe@example.com', 'hashedpassword3', 'Patient');
+
+INSERT INTO doctors (UserID, Specialization, ExperienceYears, ContactNumber) VALUES
+(2, 'Orthodontist', 10, '9876543210');
+
+INSERT INTO patients (UserID, DateOfBirth, ContactNumber, Address, MedicalHistory) VALUES
+(3, '1990-05-15', '9123456789', '123 Street, City', 'No major issues');
+
+INSERT INTO appointments (PatientID, DoctorID, AppointmentDate, Status) VALUES
+(1, 1, '2025-02-15 10:30:00', 'Pending');
+
+INSERT INTO treatments (PatientID, DoctorID, TreatmentDetails, TreatmentDate) VALUES
+(1, 1, 'Teeth cleaning and cavity filling', '2025-02-15');
+
+INSERT INTO bruxism_monitoring (PatientID, SensorData, RiskScore, MonitoringDate) VALUES
+(1, 'High grinding detected', 85.50, '2025-02-14 09:00:00');
+
+INSERT INTO ai_alerts (PatientID, AlertMessage, SeverityLevel) VALUES
+(1, 'Severe Bruxism detected! Immediate consultation required.', 'High');
+
+Step 4: Verify Your Data
+
+Show all users:
+
+SELECT * FROM users;
+Show all doctors:
+
+SELECT * FROM doctors;
+Show all patients:
+
+SELECT * FROM patients;
+Show all appointments:
+
+SELECT * FROM appointments;
+Show AI alerts:
+
+SELECT * FROM ai_alerts;
+
+
+
+
+
